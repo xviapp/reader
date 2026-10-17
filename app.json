@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "阅读",
+    "slug": "reader",
+    "version": "1.0.0",
+    "platforms": ["android"],
+    "orientation": "portrait",
+    "icon": "./assets/brand/icon.png",
+    "scheme": "xvi-reader",
+    "android": {
+      "package": "app.xvi.reader",
+      "versionCode": 1,
+      "allowBackup": false,
+      "permissions": [],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/icon-foreground.png",
+        "backgroundColor": "#F7EBD3"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      ["expo-splash-screen", {
+          "image": "./assets/brand/splash-icon.png",
+          "imageWidth": 132,
+          "resizeMode": "contain",
+          "backgroundColor": "#F9EFE2"
+        }],
+      ["expo-image-picker", {"photosPermission": "允许阅读访问照片，用于添加书籍封面和摘录。", "cameraPermission": "允许阅读使用相机，用于拍摄摘录。", "microphonePermission": false}],
+      ["react-native-enriched-markdown", {"enableMath": true}],
+      ["./plugins/with-android-manifest-cleanup", {"fileSystemProvider": true, "imagePickerActivity": true}],
+      "./plugins/with-release-signing",
+      "./plugins/with-android-release-size"
+    ],
+    "experiments": { "typedRoutes": true }
+  }
+}

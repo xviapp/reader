@@ -1,0 +1,37 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'app.xvi.reader'
+version = '1.0.0'
+
+android {
+  namespace 'app.xvi.reader.lan'
+  defaultConfig { versionCode 1; versionName '1.0.0'; consumerProguardFiles 'consumer-rules.pro' }
+  sourceSets.main.assets.srcDir(layout.buildDirectory.dir('generated/readerLanAssets'))
+  testOptions { unitTests.returnDefaultValues = true }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+  implementation 'io.ktor:ktor-server-cio-jvm:3.2.3'
+  implementation 'org.slf4j:slf4j-nop:2.0.17'
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'org.json:json:20250517'
+}
+
+def readerRoot = projectDir.toPath().resolve('../../..').normalize().toFile()
+def buildReaderWeb = tasks.register('buildReaderWeb', Exec) {
+  workingDir readerRoot
+  commandLine 'node', 'scripts/build-reader-web.mjs', '--assets', layout.buildDirectory.dir('generated/readerLanAssets/lan-web').get().asFile.absolutePath
+  inputs.files(fileTree(new File(readerRoot, 'web')) { exclude 'node_modules/**' })
+  inputs.files(fileTree(new File(readerRoot, 'src/modules/reader/lan')) { include '**/*.ts' })
+  inputs.files(new File(readerRoot, 'scripts/build-reader-web.mjs'), new File(readerRoot, 'package.json'), new File(readerRoot, 'pnpm-lock.yaml'))
+  outputs.dir(layout.buildDirectory.dir('generated/readerLanAssets/lan-web'))
+  // Validation runs on direct Gradle builds too, even when an old directory exists.
+  outputs.upToDateWhen { false }
+}
+tasks.configureEach {
+  if (name == 'preBuild' || name.matches('merge.*Assets')) dependsOn(buildReaderWeb)
+}
